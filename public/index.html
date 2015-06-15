@@ -31,12 +31,12 @@
     </div>
     <div>
         <label>Depart point: </label>
-        <select name="departPoint" ng-model="appCtrl.configuration.depart">
+        <select name="depart" ng-model="appCtrl.configuration.depart">
             <option ng-repeat="node in appCtrl.graph" ng-value="node.name">{{ node.name }}</option>
         </select>
     </div>
     <div>
-        <input type="text" palceholder="Time for each visit (in minutes)" ng-model="appCtrl.configuration.visitTime">
+        <input type="number" placeholder="Time for each visit (in minutes)" ng-model="appCtrl.configuration.visitTime">
     </div>
     <input type="button" name="startButton" value="Start" ng-click="appCtrl.start()">
 </form>
