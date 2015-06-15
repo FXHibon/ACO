@@ -56,10 +56,9 @@
         $http.get('api/data')
             .success(function (data) {
                 me.graph = data;
-                me.sigmaGraph = toSigmaGraph(data);
                 me.sigma = new sigma({
                     container: 'container',
-                    graph: me.sigmaGraph
+                    graph: toSigmaGraph(data)
                 });
                 me.configuration.depart = me.sigma.graph.nodes()[0].id;
 
@@ -148,7 +147,9 @@
                 me.edgesTraversed.push(elected);
             }
             if (elected) {
-                iterate(currentNode, cb);
+                setTimeout(function () {
+                    iterate(currentNode, cb)
+                }, 100);
 
             } else {
                 cb(currentNode);
@@ -306,7 +307,6 @@
         }
 
         function darker(c) {
-            console.log(c);
             var rgb = hexToRgb(c.substring(1));
             var delta = 20;
             rgb.r -= delta;
