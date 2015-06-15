@@ -93,9 +93,9 @@
                 function () {
                     $scope.$digest();
                     console.log("TOUT FINI");
-                    //me.edgesTraversed.forEach(function (edge) {
-                    //    edge.color = "#ff0000";
-                    //});
+                    me.edgesTraversed.forEach(function (edge) {
+                        edge.color = "#ff0000";
+                    });
                     me.sigma.refresh();
                 });
 
@@ -128,7 +128,6 @@
             var random = Math.floor((Math.random() * max));
 
             var elected;
-            shuffle(filteredEdges);
             for (var i in filteredEdges) {
                 if (filteredEdges[i].pheromones >= random) {
                     elected = filteredEdges[i];
@@ -143,7 +142,7 @@
                 elected.color = darker(elected.color);
                 me.sigma.refresh();
 
-                currentNode = elected.target;
+                currentNode = elected.target === currentNode ? elected.source : elected.target;
                 elected.visited = true;
                 me.edgesTraversed.push(elected);
             }
@@ -170,7 +169,7 @@
                 case "cheaper":
                     // PLUS COURT CHEMIN
                     evaluate = function (edges) {
-                        return 100 / edges.reduce(function (prev, cur) {
+                        return 100000 / edges.reduce(function (prev, cur) {
                                 return prev + cur.size;
                             }, 0);
                     };
