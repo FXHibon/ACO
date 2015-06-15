@@ -1,14 +1,9 @@
-body {
-    padding: 50px;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-    color: #00B7FF;
-}
-
 #container {
-    max-width: 100%;
+    width: 1000px;
     height: 800px;
+    border: solid;
     margin: auto;
+    position: fixed;
+    top: 0;
+    left: 35%;
 }

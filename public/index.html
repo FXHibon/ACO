@@ -7,41 +7,85 @@
     <script src="lib/sigma.js/sigma.min.js"></script>
     <script src="lib/sigma.js/plugins/sigma.parsers.json.min.js"></script>
 
+    <script src="lib/angular-animate/angular-animate.min.js"></script>
+    <script src="lib/angular-aria/angular-aria.min.js"></script>
+    <script src="lib/angular-material/angular-material.min.js"></script>
+
+    <script src="lib/async/lib/async.js"></script>
+
+    <link rel="stylesheet" href="lib/angular-material/angular-material.min.css">
     <link rel="stylesheet" href="stylesheets/style.css">
 
     <title>Ant Colony System</title>
 </head>
 <body ng-app="AcoApp" ng-controller="appController as appCtrl">
-<p>ACO</p>
 
-<form>
-    <div>
-        <label>Constraints: </label>
-        <select name="constraints" ng-model="appCtrl.configuration.constraint">
-            <option value="cheaper">
-                cheaper
-            </option>
-            <option value="shortest">
-                shortest
-            </option>
-            <option value="priceQuality">
-                price / quality
-            </option>
-        </select>
-    </div>
-    <div>
-        <label>Depart point: </label>
-        <select name="depart" ng-model="appCtrl.configuration.depart">
-            <option ng-repeat="node in appCtrl.graph" ng-value="node.name">{{ node.name }}</option>
-        </select>
-    </div>
-    <div>
-        <input type="number" placeholder="Time for each visit (in minutes)" ng-model="appCtrl.configuration.visitTime">
-    </div>
-    <input type="button" name="startButton" value="Start" ng-click="appCtrl.start()">
-</form>
+<md-content flex>
 
-<div id="container"></div>
+
+    <div layout="row" flex>
+
+
+        <div layout="column" flex="15">
+            <md-card>
+                <md-card-content>
+                    <div layout="row">
+                        <md-select name="constraints" ng-model="appCtrl.configuration.constraint"
+                                   placeholder="Constraints">
+                            <md-option value="cheaper">
+                                cheaper
+                            </md-option>
+                            <md-option value="shortest">
+                                shortest
+                            </md-option>
+                            <md-option value="priceQuality">
+                                price / quality
+                            </md-option>
+                        </md-select>
+                    </div>
+
+                    <div layout="row">
+                        <md-select name="depart" ng-model="appCtrl.configuration.depart" placeholder="Depart">
+                            <md-option ng-repeat="node in appCtrl.graph" ng-value="node.name">{{ node.name }}
+                            </md-option>
+                        </md-select>
+                    </div>
+
+                    <md-input-container layout="row">
+                        <input type="number" placeholder="Time for each visit (in minutes)"
+                               ng-model="appCtrl.configuration.visitTime"/>
+                    </md-input-container>
+
+                    <md-input-container layout="row">
+                        <input type="number" placeholder="Ants number"
+                               ng-model="appCtrl.configuration.antNumber"/>
+                    </md-input-container>
+
+                    <md-button class="md-raised" type="button" name="startButton" value="Start"
+                               ng-click="appCtrl.onClick()">
+                        Start
+                    </md-button>
+
+                    <div layout="column">
+                        <p>{{ appCtrl.results.length }}</p>
+                        <ol>
+                            <li ng-repeat="res in appCtrl.results">Valeur: {{ res.value}}</li>
+                        </ol>
+
+                    </div>
+
+                </md-card-content>
+            </md-card>
+
+
+        </div>
+
+
+    </div>
+
+    <div id="container" flex></div>
+
+</md-content>
 
 <script src="javascripts/app/app.js"></script>
 </body>
