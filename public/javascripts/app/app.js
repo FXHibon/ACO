@@ -8,9 +8,9 @@
         .module('AcoApp', ['ngMaterial'])
         .controller('appController', appController);
 
-    appController.$inject = ['$http'];
+    appController.$inject = ['$http', '$scope'];
 
-    function appController($http) {
+    function appController($http, $scope) {
 
         /**
          * Fonction utilitaire: cherche "val" dans chaque objet du tableau, sur le champs "field"
@@ -61,6 +61,7 @@
                     container: 'container',
                     graph: me.sigmaGraph
                 });
+                me.configuration.depart = me.sigma.graph.nodes()[0].id;
 
             });
 
@@ -73,7 +74,8 @@
             visitTime: 30,
             // Temps minimum entre chaque teleportation
             tpDelay: 5,
-            decrementationByIteration: 8
+            decrementationByIteration: 8,
+            antNumber: 1
         };
 
         me.onClick = onClick;
@@ -90,6 +92,7 @@
             me.sigma.refresh();
             async.series(functions,
                 function () {
+                    $scope.$digest();
                     console.log("TOUT FINI");
                     me.edgesTraversed.forEach(function (edge) {
                         edge.color = "#ff0000";
@@ -155,6 +158,7 @@
 
         /**
          * Lance le parcours avec la configuration donnée
+         * @param mainCb Callback de fin de fourmi
          */
         function start(mainCb) {
             console.log("START");
