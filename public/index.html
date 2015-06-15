@@ -66,21 +66,6 @@
                         Start
                     </md-button>
 
-                    <div layout="column">
-                        <ol>
-                            <li ng-repeat="res in appCtrl.results">Valeur: {{ res.value}}
-                                <ul ng-show="appCtrl.details[$index]" class="fade">
-                                    <li ng-repeat="edge in res.edges">{{ edge.source }}</li>
-                                </ul>
-                                <md-button class="md-raised" type="button"
-                                           ng-click="appCtrl.details[$index] = !appCtrl.details[$index]">Show details
-                                </md-button>
-
-                            </li>
-                        </ol>
-
-                    </div>
-
                 </md-card-content>
             </md-card>
 

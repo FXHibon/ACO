@@ -16,6 +16,7 @@
          * Fonction utilitaire: cherche "val" dans chaque objet du tableau, sur le champs "field"
          * @param val Valeur à chercher
          * @param field Champ dans lequel chercher la valeur
+         * @param isArray true pour renvoyer un tableau, sinon false
          * @returns {*}
          */
         Array.prototype.get = function (val, field, isArray) {
@@ -34,7 +35,7 @@
          * Index of compatible avec les objets
          * @param val Valeur souhaitee
          * @param field Champ sur lequel faire la recherche
-         * @returns {*}
+         * @returns {*} index de l'élément recherche, sinon -1
          */
         Array.prototype.indexOfObj = function (val, field) {
             for (var elem in this) {
@@ -86,13 +87,19 @@
         function onClick() {
             var functions = [];
             var i = me.configuration.antNumber;
+
+            // Colorie le point de départ
             me.sigma.graph.nodes().get(me.configuration.depart, "id").color = "#00ff00";
-            while (i--) functions.push(start);
             me.sigma.refresh();
+            while (i--) functions.push(start);
+
+            // Lance les fourmies les unes après les autres
             async.series(functions,
                 function () {
                     $scope.$digest();
-                    console.log("TOUT FINI");
+                    console.log("fin de la série");
+
+                    // Colorie le dernier chemin
                     me.edgesTraversed.forEach(function (edge) {
                         edge.color = "#ff0000";
                     });
@@ -103,11 +110,14 @@
 
         /**
          * Iteration (une fourmi choisi le point suivant)
+         * Récursivité: iteration est rappelée automatiquement par elle-même
          * @param currentNode Noeud courant
          * @param cb Callback final: appellé lorsqu'il n'y a plus à itérer
          * @returns {{currentNode: *, max: {val: number, node: undefined}, edge: *}}
          */
         function iterate(currentNode, cb) {
+
+            // Noeuds suivant potentiels (qui partent de notre noeud, et qui ne sont pas déjà visités)
             var filteredEdges = me.sigma.graph.edges()
                 .get(currentNode, "source", true)
                 .filter(function (edge) {
@@ -120,11 +130,13 @@
                 return;
             }
 
+            // Somme des pheromones des noeuds potentiels
             var max = filteredEdges
                 .reduce(function (prev, cur, index, array) {
                     return prev + cur.pheromones;
                 }, 0);
 
+            // Choix de l'heureux élu
             var random = Math.floor((Math.random() * max));
 
             var elected;
@@ -135,23 +147,25 @@
                 }
             }
 
-            // On a un point ? alors on va dessus, et on creé une arrête entre le point courant et la cible
+            // On a un point ? alors on va dessus, et on créé une arête entre le point courant et la cible
             if (elected) {
 
                 // Affiche l'arête
                 elected.color = darker(elected.color);
                 me.sigma.refresh();
 
-                currentNode = elected.target === currentNode ? elected.source : elected.target;
+                currentNode = elected.target;
                 elected.visited = true;
                 me.edgesTraversed.push(elected);
             }
+            // récursion
             if (elected) {
                 setTimeout(function () {
                     iterate(currentNode, cb)
                 }, 100);
 
             } else {
+                // fin, appel du callback final
                 cb(currentNode);
                 return;
             }
@@ -162,12 +176,13 @@
          * @param mainCb Callback de fin de fourmi
          */
         function start(mainCb) {
-            console.log("START");
+            console.log("début fourmi");
             // Fonction d'évaluation en fonction du critère choisi
             var evaluate;
             switch (me.configuration.constraint) {
                 case "cheaper":
                     // PLUS COURT CHEMIN
+                    // Somme des distances des arêtes parcourues
                     evaluate = function (edges) {
                         return 100000 / edges.reduce(function (prev, cur) {
                                 return prev + cur.size;
@@ -176,20 +191,21 @@
                     break;
 
                 case "shortest":
-                    // PLUS RAPIDE
+                    // TODO : PLUS RAPIDE
                     evaluate = function (edges) {
                         return Math.random();
                     };
                     break;
 
                 case "priceQuality":
-                    // RAPPORT QUALITE / PRIX
+                    // TODO : RAPPORT QUALITE / PRIX
                     evaluate = function (edges) {
                         return Math.random();
                     };
                     break;
             }
 
+            // Reset les compteurs d'arêtes visitées
             me.sigma.graph.edges().forEach(function (edge) {
                 edge.visited = false;
             });
@@ -197,12 +213,10 @@
             var currentNode = me.configuration.depart;
             me.edgesTraversed = [];
 
-
+            // Lance les itérations en asynchrones
             setTimeout(function () {
                 iterate(currentNode,
                     function (currentNode) {
-                        // Décale le dernier node pour un souci de visibilité
-                        me.sigma.graph.nodes().get(currentNode, "id").y = 1.2;
 
                         // final edge: retour au point de départ
                         var edge = me.sigma.graph.edges()
@@ -213,14 +227,18 @@
                             edge.color = darker(edge.color);
                         me.sigma.refresh();
 
+                        // Evaporation des phéromones
                         decrementPheromones(me.sigma.graph.edges());
+
+                        // Evaluation de la qualité de la solution
                         var val = evaluate(me.edgesTraversed);
                         me.results.push({
                             value: val,
                             edges: me.edgesTraversed
                         });
+                        // Dépots de phéromones sur les arêtes traversées
                         deposePheromones(me.edgesTraversed, val);
-                        console.log("end fourmi");
+                        console.log("fin fourmi");
                         mainCb(null);
                     });
             }, 0);
@@ -260,6 +278,7 @@
                 edges: []
             };
 
+            // Création des noeuds
             data.forEach(function (node) {
                 sigmaGraph.nodes.push({
                     id: node.name,
@@ -271,6 +290,7 @@
                 });
             });
 
+            // Création des arêtes
             sigmaGraph.nodes.forEach(function (node1) {
                 sigmaGraph.nodes.forEach(function (node2) {
 
@@ -291,6 +311,9 @@
             return sigmaGraph;
         }
 
+        //////////////////////////////////////////////////////////////////
+        //                fonctions utilitaires
+        //////////////////////////////////////////////////////////////////
         function componentToHex(c) {
             var hex = c.toString(16);
             return hex.length == 1 ? "0" + hex : hex;
