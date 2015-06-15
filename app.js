@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/data', function (req, res, next) {
+app.use('/api/data', function (req, res, next) {
     fs.readFile(path.join(__dirname, 'data/distances'), {encoding: "utf-8", flag: 'r'}, function (err, data) {
         if (err) throw err;
         res.status(200).json(JSON.parse(data));
