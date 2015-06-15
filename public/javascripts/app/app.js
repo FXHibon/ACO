@@ -86,16 +86,16 @@
         function onClick() {
             var functions = [];
             var i = me.configuration.antNumber;
-            me.sigma.graph.nodes().get(me.configuration.depart, "id").color = "#0f0";
+            me.sigma.graph.nodes().get(me.configuration.depart, "id").color = "#00ff00";
             while (i--) functions.push(start);
             me.sigma.refresh();
             async.series(functions,
                 function () {
                     $scope.$digest();
                     console.log("TOUT FINI");
-                    me.edgesTraversed.forEach(function (edge) {
-                        edge.color = "#ff0000";
-                    });
+                    //me.edgesTraversed.forEach(function (edge) {
+                    //    edge.color = "#ff0000";
+                    //});
                     me.sigma.refresh();
                 });
 
@@ -104,7 +104,6 @@
         /**
          * Iteration (une fourmi choisi le point suivant)
          * @param currentNode Noeud courant
-         * @param evaluate Fonction d'evaluation
          * @param cb Callback final: appellé lorsqu'il n'y a plus à itérer
          * @returns {{currentNode: *, max: {val: number, node: undefined}, edge: *}}
          */
@@ -197,30 +196,33 @@
             var currentNode = me.configuration.depart;
             me.edgesTraversed = [];
 
-            iterate(currentNode,
-                function (currentNode) {
-                    // Décale le dernier node pour un souci de visibilité
-                    me.sigma.graph.nodes().get(currentNode, "id").y = 1.2;
 
-                    // final edge: retour au point de départ
-                    var edge = me.sigma.graph.edges()
-                        .get(currentNode, "source", true)
-                        .get(me.configuration.depart, "target");
+            setTimeout(function () {
+                iterate(currentNode,
+                    function (currentNode) {
+                        // Décale le dernier node pour un souci de visibilité
+                        me.sigma.graph.nodes().get(currentNode, "id").y = 1.2;
 
-                    if (edge)
-                        edge.color = darker(edge.color);
-                    me.sigma.refresh();
+                        // final edge: retour au point de départ
+                        var edge = me.sigma.graph.edges()
+                            .get(currentNode, "source", true)
+                            .get(me.configuration.depart, "target");
 
-                    decrementPheromones(me.sigma.graph.edges());
-                    var val = evaluate(me.edgesTraversed);
-                    me.results.push({
-                        value: val,
-                        edges: me.edgesTraversed
+                        if (edge)
+                            edge.color = darker(edge.color);
+                        me.sigma.refresh();
+
+                        decrementPheromones(me.sigma.graph.edges());
+                        var val = evaluate(me.edgesTraversed);
+                        me.results.push({
+                            value: val,
+                            edges: me.edgesTraversed
+                        });
+                        deposePheromones(me.edgesTraversed, val);
+                        console.log("end fourmi");
+                        mainCb(null);
                     });
-                    deposePheromones(me.edgesTraversed, val);
-                    console.log("end fourmi");
-                    mainCb(null);
-                });
+            }, 0);
 
         }
 
