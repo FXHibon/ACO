@@ -14,13 +14,13 @@
 
         var me = this;
 
+        // Donnees d'origine
         me.graph = {};
 
         $http.get('api/data')
             .success(function (data) {
                 me.graph = data;
                 me.sigmaGraph = toSigmaGraph(data);
-                console.log(me.sigmaGraph);
                 me.sigma = new sigma({
                     container: 'container',
                     graph: me.sigmaGraph
@@ -28,13 +28,49 @@
 
             });
 
+        me.configuration = {
+            constraint: "cheaper",
+            visitTime: 10
+        };
 
         me.start = start;
 
         ///////////////////////////////////////
 
         function start() {
+            console.log("Starting with: ", me.configuration);
 
+            var evaluate;
+            switch (me.configuration.constraint) {
+                case "cheaper":
+                    evaluate = function () {
+                    };
+                    break;
+
+                case "shortest":
+                    evaluate = function () {
+                    };
+                    break;
+
+                case "priceQuality":
+                    evaluate = function () {
+                    };
+                    break;
+            }
+
+
+            // Tant qu'on a pas tout parcouru, on itere
+            while (!ended()) {
+
+            }
+        }
+
+        function ended() {
+            var ended = true;
+            for (var i in me.sigmaGraph.nodes) {
+                ended &= me.sigmaGraph.nodes[i].visited;
+            }
+            return true;
         }
 
         function toSigmaGraph(data) {
@@ -50,7 +86,8 @@
                     label: node.name,
                     color: '#666',
                     x: Math.random(),
-                    y: Math.random()
+                    y: Math.random(),
+                    visited: false
                 });
             });
 

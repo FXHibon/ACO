@@ -12,11 +12,13 @@
     <title>Ant Colony System</title>
 </head>
 <body ng-app="AcoApp" ng-controller="appController as appCtrl">
-    <p>ACO</p>
+<p>ACO</p>
 
-    <form>
-        <select name="constraints" ng-model="appCtrl.constraints">
-            <option value="cheaper" ng-selected="true">
+<form>
+    <div>
+        <label>Constraints: </label>
+        <select name="constraints" ng-model="appCtrl.configuration.constraint">
+            <option value="cheaper">
                 cheaper
             </option>
             <option value="shortest">
@@ -26,12 +28,21 @@
                 price / quality
             </option>
         </select>
+    </div>
+    <div>
+        <label>Depart point: </label>
+        <select name="departPoint" ng-model="appCtrl.configuration.depart">
+            <option ng-repeat="node in appCtrl.graph" ng-value="node.name">{{ node.name }}</option>
+        </select>
+    </div>
+    <div>
+        <input type="text" palceholder="Time for each visit (in minutes)" ng-model="appCtrl.configuration.visitTime">
+    </div>
+    <input type="button" name="startButton" value="Start" ng-click="appCtrl.start()">
+</form>
 
-        <input type="button" name="startButton" value="Start" ng-click="appCtrl.start()">
-    </form>
+<div id="container"></div>
 
-    <div id="container"></div>
-
-    <script src="javascripts/app/app.js"></script>
+<script src="javascripts/app/app.js"></script>
 </body>
 </html>
