@@ -114,6 +114,7 @@
                     return !edge.visited;
                 });
 
+            // on ne peut plus se deplacer
             if (filteredEdges.length === 0) {
                 cb(currentNode);
                 return;
@@ -127,6 +128,7 @@
             var random = Math.floor((Math.random() * max));
 
             var elected;
+            shuffle(filteredEdges);
             for (var i in filteredEdges) {
                 if (filteredEdges[i].pheromones >= random) {
                     elected = filteredEdges[i];
@@ -320,6 +322,16 @@
             rgb.b = rgb.b < 0 ? 0 : rgb.b;
 
             return rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+
+        /**
+         * Melange le tableau passe en parametre
+         * @param o
+         * @returns {*}
+         */
+        function shuffle(o) {
+            for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+            return o;
         }
     }
 
